@@ -434,6 +434,9 @@ def main():
 
     # Start the bot
     bot = Logbot(SERVER, PORT, SERVER_PASS, CHANNELS, NICK, NICK_PASS)
+    bot.oper_credentials = None
+    if OPER_NICKNAME and OPER_PASSWORD:
+        bot.oper_credentials = [OPER_NICKNAME, OPER_PASSWORD]
     try:
         # Connect to FTP
         if FTP_SERVER:
