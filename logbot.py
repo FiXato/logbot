@@ -109,6 +109,9 @@ DEFAULT_TIMEZONE = 'UTC'
 OPER_NICKNAME = ''
 OPER_PASSWORD = ''
 
+# Set to False if you don't want to have urls turned into <a> tags in logged messages
+URLIFY_MESSAGES = True
+
 default_format = {
     "help" : HELP_MESSAGE,
     "action" : '<span class="person" style="color:%color%">* %user% %message%</span>',
@@ -233,7 +236,8 @@ class Logbot(SingleServerIRCBot):
         else:
           chans = event.target()
         msg = self.format_event(name, event, params)
-        msg = urlify2(msg)
+        if self.urlify_messages:
+            msg = urlify2(msg)
 
         # In case there are still events that don't supply a channel name (like /quit and /nick did)
         if not chans or not chans.startswith("#"):
@@ -435,8 +439,13 @@ def main():
     # Start the bot
     bot = Logbot(SERVER, PORT, SERVER_PASS, CHANNELS, NICK, NICK_PASS)
     bot.oper_credentials = None
+    bot.urlify_messages = False
+
     if OPER_NICKNAME and OPER_PASSWORD:
         bot.oper_credentials = [OPER_NICKNAME, OPER_PASSWORD]
+    if URLIFY_MESSAGES:
+        bot.urlify_messages = True
+
     try:
         # Connect to FTP
         if FTP_SERVER:
