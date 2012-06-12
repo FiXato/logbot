@@ -220,6 +220,7 @@ class Logbot(SingleServerIRCBot):
         try: msg = msg.replace("%channel%", event.target())
         except: pass
         msg = msg.replace("%color%", self.color(nm_to_n(event.source())))
+        #TODO: Strip or convert color codes and other formatting
         try: msg = msg.replace("%message%", cgi.escape(event.arguments()[0]))
         except: pass
 
