@@ -90,6 +90,9 @@ JOIN_NOTICE = ""
 WELCOME_NOTICE = ""
 # WELCOME_NOTICE = "Now logging public conversations in %channel% to http://logs_host.example/logs/%channel_path%"
 
+#You can set this if you have an external CSS file you want to use for further styling of the log pages
+CSS_URL = ""
+
 # FTP Configuration
 FTP_SERVER = ""
 FTP_USER = ""
@@ -141,15 +144,17 @@ html_header = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         .person { color: #DD1144; }
         .join, .part, .quit, .kick, .mode, .topic, .nick { color: #42558C; }
         .notice { color: #AE768C; }
+        .back_link { margin: 0;}
     </style>
+    %css_url%
   </head>
   <body>
   <h1>%title%</h1>
-  <a href="..">Back</a><br />
+  <p class="back_link"><a href="..">Back</a></p>
   </body>
 </html>
 """
-
+html_header = html_header.replace('%css_url%', ('' if CSS_URL == '' else '<link rel="stylesheet" type="text/css" href="%s" />' % CSS_URL))
 
 ### Helper functions
 
