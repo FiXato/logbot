@@ -290,6 +290,8 @@ class Logbot(SingleServerIRCBot):
             write_string("%s/index.html" % chan_path, html_header.replace("%title%", "%s | Logs" % channel_title))
 
             # Append channel to log index
+            #TODO: Make this optional, based on INDEX_CHANNELS
+            # allow settings: 'all', 'public' (hide +s(ecret) channels), or 'none' (default to 'all')
             append_line("%s/index.html" % LOG_FOLDER, '<a href="%s/index.html">%s</a>' % (channel.replace("#", "%23"), channel_title))
 
         # Current log
