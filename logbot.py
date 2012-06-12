@@ -78,6 +78,18 @@ LOG_FOLDER = "logs"
 # The message returned when someone messages the bot
 HELP_MESSAGE = "Check out http://excid3.com"
 
+# Notice message to send to everyone joining the channel to notify them the channel is being logged.
+# %channel% will expand to the channel name while %channel_path% uses the url-friendly form.
+# Empty string will send no notice
+JOIN_NOTICE = ""
+# JOIN_NOTICE = "Welcome to %channel%. Public conversations in this channel are being logged to http://logs_host.example/logs/%channel_path%"
+
+# Channel notice to send when the bot enters the channel.
+# %channel% will expand to the channel name while %channel_path% uses the url-friendly form.
+# Empty string will send no notice
+WELCOME_NOTICE = ""
+# WELCOME_NOTICE = "Now logging public conversations in %channel% to http://logs_host.example/logs/%channel_path%"
+
 # FTP Configuration
 FTP_SERVER = ""
 FTP_USER = ""
@@ -325,6 +337,13 @@ class Logbot(SingleServerIRCBot):
 
     def on_join(self, c, e):
         self.write_event("join", e)
+        user = nm_to_n(e.source())
+        channel = e.target()
+        if user == c.real_nickname and WELCOME_NOTICE != '':
+            c.notice(channel, WELCOME_NOTICE.replace('%channel%', channel).replace('%channel_path%', channel.replace('#','%23')))
+            #TODO: Log this message as well.
+        elif user != c.real_nickname and JOIN_NOTICE != '':
+            c.notice(user, JOIN_NOTICE.replace('%channel%', channel).replace('%channel_path%', channel.replace('#','%23')))
 
     def on_kick(self, c, e):
         self.write_event("kick", e,
