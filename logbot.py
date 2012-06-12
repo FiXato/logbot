@@ -105,6 +105,10 @@ FTP_WAIT = 25
 CHANNEL_LOCATIONS_FILE = os.path.expanduser("~/.logbot-channel_locations.conf")
 DEFAULT_TIMEZONE = 'UTC'
 
+#Set both of these to have the bot auto-oper after connecting.
+OPER_NICKNAME = ''
+OPER_PASSWORD = ''
+
 default_format = {
     "help" : HELP_MESSAGE,
     "action" : '<span class="person" style="color:%color%">* %user% %message%</span>',
@@ -319,7 +323,8 @@ class Logbot(SingleServerIRCBot):
 
     def on_welcome(self, c, e):
         """Perform commands after successful connection"""
-        #TODO: Add oper support
+        if self.oper_credentials:
+            c.oper(*self.oper_credentials)
 
         if self.nick_pass:
           c.privmsg("nickserv", "identify %s" % self.nick_pass)
