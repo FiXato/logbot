@@ -313,7 +313,9 @@ class Logbot(SingleServerIRCBot):
         if DEBUG: print e.arguments()[0]
 
     def on_welcome(self, c, e):
-        """Join channels after successful connection"""
+        """Perform commands after successful connection"""
+        #TODO: Add oper support
+
         if self.nick_pass:
           c.privmsg("nickserv", "identify %s" % self.nick_pass)
 
@@ -327,6 +329,7 @@ class Logbot(SingleServerIRCBot):
     def on_invite(self, c, e):
         """Arbitrarily join any channel invited to"""
         c.join(e.arguments()[0])
+        #TODO: Make this optional
         #TODO: Save? Rewrite config file?
 
     ### Loggable events
