@@ -112,6 +112,9 @@ OPER_PASSWORD = ''
 # Set to False if you don't want to have urls turned into <a> tags in logged messages
 URLIFY_MESSAGES = True
 
+# Determines which channels are included in the channel index. Allowed settings: 'all' and 'none'.
+INDEX_CHANNELS = 'all'
+
 default_format = {
     "help" : HELP_MESSAGE,
     "action" : '<span class="person" style="color:%color%">* %user% %message%</span>',
@@ -295,9 +298,8 @@ class Logbot(SingleServerIRCBot):
             write_string("%s/index.html" % chan_path, html_header.replace("%title%", "%s | Logs" % channel_title))
 
             # Append channel to log index
-            #TODO: Make this optional, based on INDEX_CHANNELS
-            # allow settings: 'all', 'public' (hide +s(ecret) channels), or 'none' (default to 'all')
-            append_line("%s/index.html" % LOG_FOLDER, '<a href="%s/index.html">%s</a>' % (channel.replace("#", "%23"), channel_title))
+            if self.index_for_channel(channel):
+                append_line("%s/index.html" % LOG_FOLDER, '<a href="%s/index.html">%s</a>' % (channel.replace("#", "%23"), channel_title))
 
         # Current log
         try:
@@ -423,7 +425,25 @@ class Logbot(SingleServerIRCBot):
         if os.path.exists(CHANNEL_LOCATIONS_FILE):
             f = open(CHANNEL_LOCATIONS_FILE, 'r')
             self.channel_locations = dict((k.lower(), v) for k, v in dict([line.strip().split(None,1) for line in f.readlines()]).iteritems())
+    
+    # Check if an index for given channel should be created
+    # allowed settings: 'all', or 'none' (default to 'all')
+    # 'public' (hide +s(ecret) channels) is planned, but disabled till I find a way to make it work 
+    #TODO: Allow for per-channel overrides as well
+    def index_for_channel(self, channel):
+        if self.index_channels == 'all':
+            return True
+        elif self.index_channels == 'none':
+            return False
+        # TODO: Disabled 'public' channel indexing till I find a way to make this work.
+        #   I can't lookup the channel modes because the channel isn't listed yet on the first event, 
+        #   namely the join by the bot.
+        # elif self.index_channels == 'public' and self.channels[channel].has_mode('s'):
+        #    return False
 
+        #Default to indexing the channel
+        return True
+            
 def connect_ftp():
     print "Using FTP %s..." % (FTP_SERVER)
     f = ftplib.FTP(FTP_SERVER, FTP_USER, FTP_PASS)
@@ -440,11 +460,14 @@ def main():
     bot = Logbot(SERVER, PORT, SERVER_PASS, CHANNELS, NICK, NICK_PASS)
     bot.oper_credentials = None
     bot.urlify_messages = False
-
+    bot.index_channels = 'all'
+    
     if OPER_NICKNAME and OPER_PASSWORD:
         bot.oper_credentials = [OPER_NICKNAME, OPER_PASSWORD]
     if URLIFY_MESSAGES:
         bot.urlify_messages = True
+    if INDEX_CHANNELS:
+        bot.index_channels = INDEX_CHANNELS
 
     try:
         # Connect to FTP
