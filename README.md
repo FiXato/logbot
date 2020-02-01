@@ -5,6 +5,9 @@ Written by Chris Oliver <chris@excid3.com>
 
 Many thanks to Filip Slagter for his contributions.
 
+## Discontinuation notice
+This fork is no longer maintained and will be archived.
+
 Usage
 -----
 LogBot requires Python 2. It is NOT compatible with Python 3.
